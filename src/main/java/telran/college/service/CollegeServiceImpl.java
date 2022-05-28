@@ -92,14 +92,13 @@ public class CollegeServiceImpl implements CollegeService {
 
 	@Override
 	public List<Student> bestStudentsSubject(int nStudents, String subjectName) {
-		// TODO 
-		return null;
+		return toStudentsFromProj(marksRepository.findBestStudentsSubject(nStudents, subjectName));
 	}
 
 	@Override
 	public Subject subjectGreatestAvgMark() {
-		// TODO  
-		return null;
+		IdNameProj inp = marksRepository.findSubjectWithGreatestAvgMark(); 
+		return new Subject(inp.getId(), inp.getName());
 	}
 
 	@Override
@@ -128,8 +127,14 @@ public class CollegeServiceImpl implements CollegeService {
 	@Override
 	public List<Subject> subjectsAvgMarkGreater(int avgMark) {
 		
-		return marksRepository.findSubjectsAvgMarkGreater(avgMark).
-				stream().map(in -> new Subject(in.getId(), in.getName()))
+		List<IdNameProj> ins =  marksRepository.findSubjectsAvgMarkGreater(avgMark);
+		return toSubjectsList(ins);
+				
+	}
+
+	private List<Subject> toSubjectsList(List<IdNameProj> ins) {
+		
+		return ins.stream().map(in -> new Subject(in.getId(), in.getName()))
 				.toList();
 	}
 
@@ -141,14 +146,13 @@ public class CollegeServiceImpl implements CollegeService {
 
 	@Override
 	public List<Student> getStudentsMaxMarksCount() {
-		// TODO Auto-generated method stub
-		return null;
+		return toStudentsFromProj(marksRepository.findStudentsMaxMarks());
 	}
 
 	@Override
 	public List<Subject> getSubjectsAvgMarkLess(int avgMark) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return toSubjectsList(marksRepository.findSubjectsAvgMarkLess(avgMark));
 	}
 
 }
