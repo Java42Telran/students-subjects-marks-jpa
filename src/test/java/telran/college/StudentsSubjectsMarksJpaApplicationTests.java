@@ -27,6 +27,7 @@ class StudentsSubjectsMarksJpaApplicationTests {
 		collegeService.addMark(new Mark(2, 1, 75));
 		collegeService.addMark(new Mark(2, 1, 80));
 		collegeService.addMark(new Mark(3, 1, 60));
+		
 		collegeService.addMark(new Mark(4, 2, 65));
 		collegeService.addMark(new Mark(5, 3, 70));
 		
@@ -36,24 +37,30 @@ class StudentsSubjectsMarksJpaApplicationTests {
 	void getMarksStudentSubjectTest() {
 		List<Integer> expected = Arrays.asList(70, 80, 90);
 		List<Integer> actual = collegeService.getStudentMarksSubject("student1", "subject1");
+		
 		assertIterableEquals(expected, actual);
+		collegeService.addMark(new Mark(3, 2, 60));
+		expected = Arrays.asList(60);
+		actual = collegeService.getStudentMarksSubject("student3", "subject1");
+		runTest(expected, actual);
 	}
 	@Test
 	@Order(3)
 	void getStudentsSubjectMarks() {
 		List<String> expected = Arrays.asList("student1", "student2");
 		List<String> actual = collegeService.getStudentsSubjectMark("subject1", 70);
-		assertIterableEquals(expected, actual);
+		runTest(expected, actual);
 	}
 	@Test
 	@Order(4)
 	void getGoodStudents() {
 		List<Student> expected = Arrays.asList(new Student(1, "student1"), new Student(2, "student2"));
 		List<Student> actual = collegeService.goodCollegeStudents();
-		assertIterableEquals(expected, actual);
+		
+		runTest(expected, actual);
 	}
 	@Test
-	@Order(14)
+	@Order(15)
 	void deleteStudents() {
 		collegeService.deleteStudentsAvgMarkLess(70);
 		List<String> actual = collegeService.getStudentsSubjectMark("subject1", 30);
@@ -65,23 +72,26 @@ class StudentsSubjectsMarksJpaApplicationTests {
 	void getSubjectsAvgMarkGreater() {
 		List<Subject> expected = Arrays.asList(new Subject(1, "subject1"), new Subject(3, "subject3"));
 		List<Subject> actual = collegeService.subjectsAvgMarkGreater(65);
-		assertIterableEquals(expected, actual);
+		runTest(expected, actual);
 		
 	}
 	@Test
-	@Order(15)
+	@Order(14)
 	void deleteStudentsCountLess() {
-		List<Student> expected = Arrays.asList(new Student(5, "student5"));
+		List<Student> expected = Arrays.asList(new Student(4, "student4"),
+				new Student(5, "student5"),new Student(6, "student6"),new Student(7, "student7"),
+				new Student(8, "student8"), new Student(9, "student9"), new Student(10, "student10"));
 		List<Student> actual = collegeService.deleteStudentsMarksCountLess(2);
 		
-		assertIterableEquals(expected, actual);
+		runTest(expected, actual);
 	}
 	@Test
 	@Order(5)
 	void bestStudents() {
 		List<Student> expected = Arrays.asList(new Student(1, "student1"));
 		List<Student> actual = collegeService.bestStudents(1);
-		assertIterableEquals(expected, actual);
+		runTest(expected, actual);
+		
 	}
 	@Test
 	@Order (7)
@@ -95,7 +105,7 @@ class StudentsSubjectsMarksJpaApplicationTests {
 	void bestStudentsSubjects () {
 		List<Student> expected = Arrays.asList(new Student(1, "student1"),new Student(2, "student2") );
 		List<Student> actual = collegeService.bestStudentsSubject(2,"subject1");
-		assertIterableEquals(expected, actual);
+		runTest(expected, actual);
 	}
 	@Test
 	@Order (9)
@@ -112,11 +122,18 @@ class StudentsSubjectsMarksJpaApplicationTests {
 	@Test
 	@Order (11)
 	void subjectsAvgMarkLess() {
-		Iterable<Subject> expected = Arrays.asList(new Subject(2, "subject2"),
+		List<Subject> expected = Arrays.asList(new Subject(2, "subject2"),
 				new Subject(4, "subject4"), new Subject(5, "subject5"));
-		assertIterableEquals(expected , collegeService.getSubjectsAvgMarkLess(70));
+		runTest(expected , collegeService.getSubjectsAvgMarkLess(70));
 	}
+//	
+private <T> void runTest(List<T> listExpected, List<T> listActual)	{
+	assertEquals(listExpected.size(), listActual.size());
+	Set<T> expected = new HashSet<>(listExpected);
+	Set<T> actual = new HashSet<>(listActual);
 	
-	
+	assertTrue(expected.stream().allMatch(actual::contains));
+}
 
 }
+
